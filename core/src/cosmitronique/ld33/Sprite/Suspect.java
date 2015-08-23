@@ -109,16 +109,16 @@ public class Suspect {
 	private TextureRegion shirt;
 	private TextureRegion pants;
 	
-	private BODY_TYPE bodyType;
-	private FACE faceType;
+	public BODY_TYPE bodyType;
+	public FACE faceType;
 	private float faceX, faceY;
-	private HAIR hairType;
+	public HAIR hairType;
 	private float hairX, hairY;
-	private SHIRT_COLOR shirtColor;
-	private SHIRT_TYPE shirtType;
+	public SHIRT_COLOR shirtColor;
+	public SHIRT_TYPE shirtType;
 	private float shirtX, shirtY;
 	private float pantsX, pantsY;
-	private boolean isMonster;
+	public boolean isMonster;
 	private Random r;
 	
 	public float xPos, yPos;
@@ -140,7 +140,7 @@ public class Suspect {
 		initBodyParts();
 	}
 	
-	private void initBodyParts(){
+	public void initBodyParts(){
 		switch(bodyType){
 		case SMALL:
 			body = bodies[0][0];

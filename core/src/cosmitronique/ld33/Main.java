@@ -60,10 +60,12 @@ public class Main extends ApplicationAdapter {
 	
 	private Texture folderClosed;
 	private Texture folderOpen;
+	float folderY;
 	
 	private Music backgroundMusic;
 	
 	private int level;
+	private boolean started;
 	
 	
 	private enum GAME_STATE{
@@ -71,7 +73,9 @@ public class Main extends ApplicationAdapter {
 		OPENING_FADE,
 		BEGIN_FADE,
 		BEGIN_LEVEL,
+		BEGIN_REGULAR,
 		REGULAR,
+		FOLDER_UP,
 		SHUFFLE,
 		VIEW_DOC,
 		AWAIT_RESULT,
@@ -214,12 +218,160 @@ public class Main extends ApplicationAdapter {
 				if(Gdx.input.isButtonPressed(0)){
 					elapsedTime = 0;
 					gameState = GAME_STATE.BEGIN_LEVEL;
+					prevClicked = true;
 				}
 			}
 				
 			break;
 		case BEGIN_LEVEL:
+			switch(level){
+			case 0:
+				batch.draw(background,0,0);
+				batch.draw(folderOpen, -94,0);
+				font.drawMultilinedMessage("Case 001\n\n\n- The monster is tall.\n- The monster likes green.", batch, 290, 300, 1, Color.BLACK);
+				
+				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
+					//set up "suspsects
+					suspects[0].bodyType = BODY_TYPE.SMALL;
+					suspects[0].shirtType = SHIRT_TYPE.TWO;
+					suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+					suspects[0].faceType = FACE.FOUR;
+					suspects[0].hairType = HAIR.LONG_LONG;
+					suspects[0].initBodyParts();
+					
+					suspects[1].bodyType = BODY_TYPE.MED;
+					suspects[1].shirtType = SHIRT_TYPE.ONE;
+					suspects[1].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[1].faceType = FACE.THREE;
+					suspects[1].hairType = HAIR.BALD;
+					suspects[1].initBodyParts();
+					
+					suspects[2].bodyType = BODY_TYPE.MED;
+					suspects[2].shirtType = SHIRT_TYPE.THREE;
+					suspects[2].shirtColor = SHIRT_COLOR.BLUE;
+					suspects[2].faceType = FACE.TWO;
+					suspects[2].hairType = HAIR.SHORT;
+					suspects[2].initBodyParts();
+					
+					suspects[3].bodyType = BODY_TYPE.LARGE;
+					suspects[3].shirtType = SHIRT_TYPE.THREE;
+					suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[3].faceType = FACE.ONE;
+					suspects[3].hairType = HAIR.STYLE;
+					suspects[3].initBodyParts();
+					
+					suspects[4].bodyType = BODY_TYPE.SMALL;
+					suspects[4].shirtType = SHIRT_TYPE.TWO;
+					suspects[4].shirtColor = SHIRT_COLOR.BROWN;
+					suspects[4].faceType = FACE.FOUR;
+					suspects[4].hairType = HAIR.LONG;
+					suspects[4].initBodyParts();
+					
+					gameState = GAME_STATE.BEGIN_REGULAR;
+				}
+				else
+					if(Gdx.input.isButtonPressed(0) && !prevClicked)
+						gameState = GAME_STATE.BEGIN_REGULAR;
+					else
+					if(!Gdx.input.isButtonPressed(0) &&  prevClicked)
+						prevClicked = false;
+				
+				break;
+			case 1:
+				
+				break;
+			case 2:
+				
+				break;
+			case 3:
+				
+				break;
+			case 4:
+				
+				break;
+				
+				
+				
+			}//end switch level
 			
+			break;
+			
+		case BEGIN_REGULAR:
+			batch.draw(backgroundWindow, 46, 161);
+			for(Suspect s : suspects)
+				s.Draw(batch);
+			batch.draw(background, 0, 0);
+			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
+			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
+			batch.draw(folderClosed, -94, folderY);
+			
+			folderY -= 400 * Gdx.graphics.getDeltaTime();
+			
+			if(folderY < -463){
+				folderY = 0;
+				gameState = GAME_STATE.REGULAR;
+			}
+			
+			break;
+			
+		case REGULAR:
+			batch.draw(backgroundWindow, 46, 161);
+			
+			doPeople(batch);
+			
+			batch.draw(background,0,0);
+			
+			if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(shuffleRec))
+				batch.draw(shuffle[0][1], 82, -413 -55 + 480);
+			else
+				batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
+			
+			if(selected[0] || selected[1] || selected[2] || selected[3] || selected[4]){
+				if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(confirmRec))
+					batch.draw(confirm[0][2], 106, -335 - 66 + 480);
+				else
+					batch.draw(confirm[0][1], 106, -335 - 66 + 480);
+			}
+			else
+				batch.draw(confirm[0][0], 106, -335 - 66 + 480);
+			
+			if(mouseRec.overlaps(deskFolderRec)){
+				batch.setColor(Color.RED);
+				batch.draw(deskFolder, 214, -373 - 110 + 480);
+				batch.setColor(Color.WHITE);
+				
+				if(Gdx.input.isButtonPressed(0)){
+					folderY = - 463;
+					gameState = GAME_STATE.FOLDER_UP;
+				}
+			}else
+				batch.draw(deskFolder, 214, -373 - 110 + 480);
+			
+			if(Gdx.input.isButtonPressed(0))
+				batch.draw(cursor[0][1], mouseX, mouseY - cursor[0][1].getRegionHeight());
+			else
+				batch.draw(cursor[0][0], mouseX, mouseY - cursor[0][0].getRegionHeight());
+		
+			
+			break;
+			
+		case FOLDER_UP:
+			batch.draw(backgroundWindow, 46, 161);
+			for(Suspect s : suspects)
+				s.Draw(batch);
+			batch.draw(background, 0, 0);
+			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
+			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
+			batch.draw(folderClosed, -94, folderY);
+			
+			folderY += 400 * Gdx.graphics.getDeltaTime();
+			
+			if(folderY >= 0){
+				folderY = 0;
+				started = true;
+				gameState = GAME_STATE.BEGIN_LEVEL;
+			}
+				
 		}
 		/*
 		batch.draw(backgroundWindow, 46,161);
