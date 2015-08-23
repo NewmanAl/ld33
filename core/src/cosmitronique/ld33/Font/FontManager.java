@@ -21,7 +21,6 @@ public class FontManager {
 	public FontManager(){
 		fontTex = new Texture(Gdx.files.internal("Font/thickFont.png"));
 		fontText = TextureRegion.split(fontTex, 8, 8);
-		
 	}
 	
 	public void drawMultilinedMessage(String msg, SpriteBatch batch, float x, float y, float scale, Color color){
@@ -69,6 +68,13 @@ public class FontManager {
 		}
 		
 		batch.setColor(Color.WHITE);
+	}
+	
+	public void dispose(){
+		fontTex.dispose();
+		for(int i = 0; i < fontText.length; i++)
+			for(int j = 0; j < fontText[i].length; j++)
+				fontText[i][j].getTexture().dispose();
 	}
 
 }
