@@ -35,7 +35,8 @@ public class FontManager {
 	public void drawMessage(String msg, SpriteBatch batch, float x, float y, float scale, Color color){
 		xOffset = yOffset = 0;
 		texX = texY = 0;
-		batch.setColor(color);
+		Color prevColor = batch.getColor();
+		batch.setColor(color.r, color.g, color.b, prevColor.a );
 		
 		for(int i = 0; i<msg.length(); i++){
 			//find position in letters
@@ -67,7 +68,7 @@ public class FontManager {
 			batch.draw(fontText[texY][texX], x + xOffset, y + yOffset, 8 * scale, 8 * scale);
 		}
 		
-		batch.setColor(Color.WHITE);
+		batch.setColor(prevColor);
 	}
 	
 	public void dispose(){

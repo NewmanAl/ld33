@@ -4,6 +4,7 @@ import java.awt.Cursor;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -41,6 +42,11 @@ public class Main extends ApplicationAdapter {
 	private Rectangle mouseRec;
 	private Pixmap dummyCursor;
 	
+	private Texture openingTex;
+	private float elapsedTime;
+	private boolean flashText;
+	private float fade = 1;
+	
 	private Texture shuffleTex;
 	private TextureRegion[][] shuffle;
 	private Rectangle shuffleRec;
@@ -52,8 +58,18 @@ public class Main extends ApplicationAdapter {
 	private Texture deskFolder;
 	private Rectangle deskFolderRec;
 	
+	private Texture folderClosed;
+	private Texture folderOpen;
+	
+	private Music backgroundMusic;
+	
+	private int level;
+	
 	
 	private enum GAME_STATE{
+		OPENING,
+		OPENING_FADE,
+		BEGIN_FADE,
 		BEGIN_LEVEL,
 		REGULAR,
 		SHUFFLE,
@@ -61,8 +77,8 @@ public class Main extends ApplicationAdapter {
 		AWAIT_RESULT,
 		END_LEVEL,
 		GAME_OVER
-		
 	}
+	private GAME_STATE gameState;
 	
 	@Override
 	public void create () {
@@ -71,6 +87,16 @@ public class Main extends ApplicationAdapter {
 		cam = new OrthographicCamera(640,480 * (4/3));
 		cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
+        
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/You are the Monster.mp3"));
+        backgroundMusic.setVolume(0);
+        backgroundMusic.setLooping(true);
+        backgroundMusic.play();
+        
+        gameState = GAME_STATE.OPENING;
+        openingTex = new Texture(Gdx.files.internal("Sprites/NEwspaper_opening.png"));
+        elapsedTime = 0;
+        
         
         cursorTex = new Texture(Gdx.files.internal("Sprites/cursor.png"));
         cursor = TextureRegion.split(cursorTex, 122, 87);
@@ -88,6 +114,9 @@ public class Main extends ApplicationAdapter {
         
         background = new Texture(Gdx.files.internal("Sprites/Background.png"));
         backgroundWindow = new Texture(Gdx.files.internal("Sprites/BackgroundWindow.png"));
+        
+        folderClosed = new Texture(Gdx.files.internal("Sprites/Large_Folder_Closed.png"));
+        folderOpen = new Texture(Gdx.files.internal("Sprites/Large_Folder_Open.png"));
         
         suspects = new Suspect[5];
         suspects[0] = new Suspect(BODY_TYPE.LARGE, FACE.ONE, HAIR.SHORT, SHIRT_COLOR.PURPLE, SHIRT_TYPE.ONE, false, 100, -146 - 173 +480);
@@ -108,11 +137,12 @@ public class Main extends ApplicationAdapter {
         mouseRec.width = 1;
         mouseRec.height = 1;
         
+        //gameState = GAME_STATE.BEGIN_FADE;
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cam.update();
 		batch.setProjectionMatrix(cam.combined);
@@ -127,6 +157,71 @@ public class Main extends ApplicationAdapter {
 		mouseRec.y = mouseY;
 		
 		batch.begin();
+		switch(gameState){
+		case OPENING:
+			batch.draw(openingTex,0,0);
+
+			if(backgroundMusic.getVolume() < 1)
+				backgroundMusic.setVolume(Math.min(backgroundMusic.getVolume() + Gdx.graphics.getDeltaTime(), 1));
+			else{
+			
+				elapsedTime += Gdx.graphics.getDeltaTime();
+				
+				if(elapsedTime >= 1){
+					//reset flashtime
+					flashText = !flashText;
+					elapsedTime = 0;
+				}
+				if(flashText)
+					font.drawMessage("CLICK ANYWHERE TO START", batch, 264, 10, 2, Color.WHITE);
+				
+				if(Gdx.input.isButtonPressed(0)){
+					elapsedTime = 0;
+					flashText = false;
+					gameState = GAME_STATE.OPENING_FADE;
+				}
+			}
+			break;
+		case OPENING_FADE:
+			fade -= Gdx.graphics.getDeltaTime();
+			if (fade < 0)
+				fade = 0;
+			
+			batch.setColor(1,1,1,fade);
+			batch.draw(openingTex, 0 ,0);
+			batch.setColor(Color.WHITE);
+			
+			if(fade == 0)
+				gameState = GAME_STATE.BEGIN_FADE;
+			
+			break;
+		case BEGIN_FADE:
+			fade += Gdx.graphics.getDeltaTime();
+			if(fade > 1){
+				fade = 1;
+			}
+			
+			batch.setColor(1,1,1,fade);
+			batch.draw(background, 0,0);
+			batch.draw(folderOpen,-94,0);
+			font.drawMultilinedMessage("You are an agent of the P.A.I.N agency \n(Protection Against Intelligent \nNon-Humans), charged with ridding the \ncity of its shape-shifting monsters.\n\nAs an expert monster spotter, you \nmust find the monster hidden among the \nsuspects brought before you. Use the \nfile provided for clues.\n\nGood luck!",
+					batch, 290, 300, 1, Color.BLACK);
+			batch.setColor(Color.WHITE);
+			
+			if(fade == 1){
+				font.drawMessage("Click anywhere to begin!", batch, 350, 25, 1, Color.BLACK);
+				
+				if(Gdx.input.isButtonPressed(0)){
+					elapsedTime = 0;
+					gameState = GAME_STATE.BEGIN_LEVEL;
+				}
+			}
+				
+			break;
+		case BEGIN_LEVEL:
+			
+		}
+		/*
 		batch.draw(backgroundWindow, 46,161);
 		
 		doPeople(batch);
@@ -154,6 +249,8 @@ public class Main extends ApplicationAdapter {
 			batch.draw(cursor[0][1], mouseX, mouseY - cursor[0][1].getRegionHeight());
 		else
 			batch.draw(cursor[0][0], mouseX, mouseY - cursor[0][0].getRegionHeight());
+			
+		*/
 		batch.end();
 	}
 	
@@ -166,6 +263,8 @@ public class Main extends ApplicationAdapter {
 			cursor[0][i].getTexture().dispose();
 		background.dispose();
 		backgroundWindow.dispose();
+		
+		openingTex.dispose();
 		
 		shuffleTex.dispose();
 		for(int i = 0; i< shuffle[0].length; i++)
@@ -180,6 +279,11 @@ public class Main extends ApplicationAdapter {
 		for(int i = 0; i<suspects.length; i++)
 			suspects[i].dispose();
 		Suspect.disposeAllTextures();
+		
+		backgroundMusic.dispose();
+		
+		folderOpen.dispose();
+		folderClosed.dispose();
 		
 		//dummyCursor.dispose();
 	}
