@@ -42,7 +42,16 @@ public class Main extends ApplicationAdapter {
 	private Pixmap dummyCursor;
 	
 	private Texture shuffleTex;
-	//private TextureRegion
+	private TextureRegion[][] shuffle;
+	private Rectangle shuffleRec;
+	
+	private Texture confirmTex;
+	private TextureRegion[][] confirm;
+	private Rectangle confirmRec;
+	
+	private Texture deskFolder;
+	private Rectangle deskFolderRec;
+	
 	
 	private enum GAME_STATE{
 		BEGIN_LEVEL,
@@ -65,6 +74,17 @@ public class Main extends ApplicationAdapter {
         
         cursorTex = new Texture(Gdx.files.internal("Sprites/cursor.png"));
         cursor = TextureRegion.split(cursorTex, 122, 87);
+        
+        shuffleTex = new Texture(Gdx.files.internal("Sprites/shuffle.png"));
+        shuffle = TextureRegion.split(shuffleTex, 76, 55);
+        shuffleRec = new Rectangle(82, -395 - 55 + 480, 76, 55);
+        
+        confirmTex = new Texture(Gdx.files.internal("Sprites/confirm.png"));
+        confirm = TextureRegion.split(confirmTex, 78, 66);
+        confirmRec = new Rectangle(106, -317 - 66 + 480, 78, 66);
+        
+        deskFolder = new Texture(Gdx.files.internal("Sprites/folder.png"));
+        deskFolderRec = new Rectangle(214, -373 - 110 + 480, 211, 110);
         
         background = new Texture(Gdx.files.internal("Sprites/Background.png"));
         backgroundWindow = new Texture(Gdx.files.internal("Sprites/BackgroundWindow.png"));
@@ -103,6 +123,8 @@ public class Main extends ApplicationAdapter {
 		
 		mouseX = 640 * mouseX / 800;
 		mouseY = 480 * mouseY / 600;
+		mouseRec.x = mouseX;
+		mouseRec.y = mouseY;
 		
 		batch.begin();
 		batch.draw(backgroundWindow, 46,161);
@@ -111,7 +133,22 @@ public class Main extends ApplicationAdapter {
 		
 		batch.draw(background, 0, 0);
 		
-		font.drawMessage("X: " + suspects[0].xPos + " - Y: " + suspects[0].yPos, batch, 0, (float)(8 * 2), 2.0f, Color.WHITE);
+		if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(shuffleRec))
+			batch.draw(shuffle[0][1], 82, -413 -55 + 480);
+		else
+			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
+		
+		if(selected[0] || selected[1] || selected[2] || selected[3] || selected[4]){
+			if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(confirmRec))
+				batch.draw(confirm[0][2], 106, -335 - 66 + 480);
+			else
+				batch.draw(confirm[0][1], 106, -335 - 66 + 480);
+		}
+		else
+			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
+		
+		batch.draw(deskFolder, 214, -373 - 110 + 480);
+		
 		//font.drawMessage("X: " + mouseX + " - Y: " + mouseY, batch, 0, (float)(8 * 2), 2.0f, Color.WHITE);
 		if(Gdx.input.isButtonPressed(0))
 			batch.draw(cursor[0][1], mouseX, mouseY - cursor[0][1].getRegionHeight());
@@ -125,10 +162,20 @@ public class Main extends ApplicationAdapter {
 		batch.dispose();
 		font.dispose();
 		cursorTex.dispose();
-		for(int i = 0; i< cursor.length; i++)
+		for(int i = 0; i< cursor[0].length; i++)
 			cursor[0][i].getTexture().dispose();
 		background.dispose();
 		backgroundWindow.dispose();
+		
+		shuffleTex.dispose();
+		for(int i = 0; i< shuffle[0].length; i++)
+			shuffle[0][i].getTexture().dispose();
+		
+		confirmTex.dispose();
+		for(int i = 0; i<confirm[0].length; i++)
+			confirm[0][i].getTexture().dispose();
+		
+		deskFolder.dispose();
 		
 		for(int i = 0; i<suspects.length; i++)
 			suspects[i].dispose();
@@ -138,13 +185,6 @@ public class Main extends ApplicationAdapter {
 	}
 	
 	private void doPeople(SpriteBatch batch){//monstrous name... :D
-		mouseRec.x = mouseX;
-		mouseRec.y = mouseY;
-		
-		for(int i = 0; i < suspects.length; i++){
-			System.out.println("Drawing suspect " + (i+1));
-			suspects[i].Draw(batch);
-		}
 		
 		hoveredOver[0] = mouseRec.overlaps(peopleRecs[0]);
 		hoveredOver[1] = mouseRec.overlaps(peopleRecs[1]);
