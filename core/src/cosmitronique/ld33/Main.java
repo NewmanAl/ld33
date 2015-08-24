@@ -331,7 +331,7 @@ public class Main extends ApplicationAdapter {
 			case 1:
 				batch.draw(background,0,0);
 				batch.draw(folderOpen, -94,0);
-				font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
+				font.drawMultilinedMessage("Case 002\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
 				
 				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
 					//set up "suspsects
@@ -393,7 +393,7 @@ public class Main extends ApplicationAdapter {
 			case 2:
 				batch.draw(background,0,0);
 				batch.draw(folderOpen, -94,0);
-				font.drawMultilinedMessage("\nCase 003\n\n\n- The monster is uncomfortable \nstanding next to someone with the same\ncoloured shirt.\n- The monster will not tolerate \nstanding next to someone of the same \nheight.", batch, 290, 300, 1, Color.BLACK);
+				font.drawMultilinedMessage("Case 003\n\n\n- The monster is uncomfortable \nstanding next to someone with the same\ncoloured shirt.\n- The monster will not tolerate \nstanding next to someone of the same \nheight.", batch, 290, 300, 1, Color.BLACK);
 				
 				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
 					//set up "suspsects
@@ -435,7 +435,7 @@ public class Main extends ApplicationAdapter {
 					
 					suspects[4].bodyType = BODY_TYPE.SMALL;
 					suspects[4].shirtType = SHIRT_TYPE.ONE;
-					suspects[4].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[4].shirtColor = SHIRT_COLOR.RED;
 					suspects[4].faceType = FACE.FOUR;
 					suspects[4].hairType = HAIR.LONG;
 					suspects[4].isMonster = false;
@@ -454,7 +454,7 @@ public class Main extends ApplicationAdapter {
 			case 3:
 				batch.draw(background,0,0);
 				batch.draw(folderOpen, -94,0);
-				font.drawMultilinedMessage("\nCase 004\n\n\n- The monster doesn’t want blue on or\nanywhere near it.\n- Nobody to its left must be shorter \nthan it.", batch, 290, 300, 1, Color.BLACK);
+				font.drawMultilinedMessage("Case 004\n\n\n- The monster doesn’t want red on or\nanywhere near it.\n- Nobody to its left must be shorter \nthan it.", batch, 290, 300, 1, Color.BLACK);
 				
 				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
 					//set up "suspsects
@@ -515,7 +515,7 @@ public class Main extends ApplicationAdapter {
 			case 4:
 				batch.draw(background,0,0);
 				batch.draw(folderOpen, -94,0);
-				font.drawMultilinedMessage("\nCase 005\n\n\n- The monster refuses to stand next to \nsomeone wearing green.", batch, 290, 300, 1, Color.BLACK);
+				font.drawMultilinedMessage("Case 005\n\n\n- The monster refuses to stand next to \nsomeone wearing green.", batch, 290, 300, 1, Color.BLACK);
 				
 				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
 					//set up "suspsects
@@ -1140,7 +1140,7 @@ public class Main extends ApplicationAdapter {
 				
 				suspects[3].bodyType = BODY_TYPE.SMALL;
 				suspects[3].shirtType = SHIRT_TYPE.ONE;
-				suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[3].shirtColor = SHIRT_COLOR.RED;
 				suspects[3].faceType = FACE.FOUR;
 				suspects[3].hairType = HAIR.LONG;
 				suspects[3].isMonster = true;
@@ -1185,7 +1185,7 @@ public class Main extends ApplicationAdapter {
 				
 				suspects[4].bodyType = BODY_TYPE.SMALL;
 				suspects[4].shirtType = SHIRT_TYPE.ONE;
-				suspects[4].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[4].shirtColor = SHIRT_COLOR.RED;
 				suspects[4].faceType = FACE.FOUR;
 				suspects[4].hairType = HAIR.LONG;
 				suspects[4].isMonster = false;
