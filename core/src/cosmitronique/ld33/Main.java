@@ -66,6 +66,7 @@ public class Main extends ApplicationAdapter {
 	private TextureRegion[][] clock;
 	private int clockState;
 	private boolean timeRunout;
+	private float clockTime;
 	
 	private Music backgroundMusic;
 	
@@ -73,6 +74,8 @@ public class Main extends ApplicationAdapter {
 	private int numCorrect;
 	private boolean started;
 	private boolean shuffleState;
+	
+	
 	
 	
 	private enum GAME_STATE{
@@ -244,6 +247,7 @@ public class Main extends ApplicationAdapter {
 				
 			break;
 		case BEGIN_LEVEL:
+			
 			switch(level){
 			case 0:
 				batch.draw(background,0,0);
@@ -367,7 +371,7 @@ public class Main extends ApplicationAdapter {
 			case 2:
 				batch.draw(background,0,0);
 				batch.draw(folderOpen, -94,0);
-				//font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
+				font.drawMultilinedMessage("\nCase 003\n\n\n- The monster is uncomfortable \nstanding next to someone with the same\ncoloured shirt.\n- The monster will not tolerate \nstanding next to someone of the same \nheight.", batch, 290, 300, 1, Color.BLACK);
 				
 				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
 					//set up "suspsects
@@ -428,7 +432,7 @@ public class Main extends ApplicationAdapter {
 			case 3:
 				batch.draw(background,0,0);
 				batch.draw(folderOpen, -94,0);
-				//font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
+				font.drawMultilinedMessage("\nCase 004\n\n\n- The monster doesn’t want blue on or\nanywhere near it.\n- Nobody to its left must be shorter \nthan it.", batch, 290, 300, 1, Color.BLACK);
 				
 				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
 					//set up "suspsects
@@ -489,7 +493,7 @@ public class Main extends ApplicationAdapter {
 			case 4:
 				batch.draw(background,0,0);
 				batch.draw(folderOpen, -94,0);
-				//font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
+				font.drawMultilinedMessage("\nCase 005\n\n\n- The monster refuses to stand next to \nsomeone wearing green.", batch, 290, 300, 1, Color.BLACK);
 				
 				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
 					//set up "suspsects
@@ -592,6 +596,7 @@ public class Main extends ApplicationAdapter {
 				if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(confirmRec)){
 					batch.draw(confirm[0][2], 106, -335 - 66 + 480);
 					gameState = GAME_STATE.AWAIT_RESULT;
+					elapsedTime = 0;
 				}
 				else
 					batch.draw(confirm[0][1], 106, -335 - 66 + 480);
@@ -656,7 +661,6 @@ public class Main extends ApplicationAdapter {
 				gameState = GAME_STATE.SHUFFLE_END;
 				shuffleState = !shuffleState;
 				shuffle(level);
-				System.out.println(level);
 			}
 			break;
 			
@@ -727,6 +731,9 @@ public class Main extends ApplicationAdapter {
 					gameState = GAME_STATE.GAME_OVER;
 				else
 					gameState = GAME_STATE.BEGIN_LEVEL;
+				
+				clockState = 0;
+				clockTime = 0;
 			}
 			
 			break;
@@ -736,36 +743,6 @@ public class Main extends ApplicationAdapter {
 			
 				
 		}
-		/*
-		batch.draw(backgroundWindow, 46,161);
-		
-		doPeople(batch);
-		
-		batch.draw(background, 0, 0);
-		
-		if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(shuffleRec))
-			batch.draw(shuffle[0][1], 82, -413 -55 + 480);
-		else
-			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
-		
-		if(selected[0] || selected[1] || selected[2] || selected[3] || selected[4]){
-			if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(confirmRec))
-				batch.draw(confirm[0][2], 106, -335 - 66 + 480);
-			else
-				batch.draw(confirm[0][1], 106, -335 - 66 + 480);
-		}
-		else
-			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
-		
-		batch.draw(deskFolder, 214, -373 - 110 + 480);
-		
-		//font.drawMessage("X: " + mouseX + " - Y: " + mouseY, batch, 0, (float)(8 * 2), 2.0f, Color.WHITE);
-		if(Gdx.input.isButtonPressed(0))
-			batch.draw(cursor[0][1], mouseX, mouseY - cursor[0][1].getRegionHeight());
-		else
-			batch.draw(cursor[0][0], mouseX, mouseY - cursor[0][0].getRegionHeight());
-			
-		*/
 		batch.end();
 	}
 	
@@ -1356,17 +1333,19 @@ public class Main extends ApplicationAdapter {
 	}
 	
 	private void doClock(SpriteBatch batch){
-		elapsedTime += Gdx.graphics.getDeltaTime();
+		clockTime += Gdx.graphics.getDeltaTime();
 		
-		if(elapsedTime >= 3.75){
+		if(clockTime >= 3.75){
 			clockState++;
-			elapsedTime = 0;
+			clockTime = 0;
 		}
 		
 		if(clockState == 8){
+			clockTime = 0;
 			clockState = 0;
 			timeRunout = true;
 			gameState = GAME_STATE.END_LEVEL;
+			elapsedTime = 0;
 		}
 		
 		batch.draw(clock[0][clockState], 292, -53 - 56 + 480);
