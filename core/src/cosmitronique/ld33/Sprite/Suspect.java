@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import cosmitronique.ld33.Font.FontManager;
+
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -120,12 +123,15 @@ public class Suspect {
 	private float pantsX, pantsY;
 	public boolean isMonster;
 	private Random r;
+	private float signX, signY;
 	
 	public float xPos, yPos;
 	private float scale;
 	private boolean isSelected;
+	public int suspectNumber;
+	FontManager font;
 	
-	public Suspect(BODY_TYPE body, FACE face, HAIR hair, SHIRT_COLOR shirtC, SHIRT_TYPE shirtT, boolean isMonster, float xPos, float yPos){
+	public Suspect(BODY_TYPE body, FACE face, HAIR hair, SHIRT_COLOR shirtC, SHIRT_TYPE shirtT, boolean isMonster, float xPos, float yPos, FontManager f){
 		bodyType = body;
 		faceType = face;
 		hairType = hair;
@@ -137,6 +143,8 @@ public class Suspect {
 		
 		r = new Random();
 		
+		font = f;
+		
 		initBodyParts();
 	}
 	
@@ -144,6 +152,9 @@ public class Suspect {
 		switch(bodyType){
 		case SMALL:
 			body = bodies[0][0];
+			
+			signX = 10;
+			signY = -70 - 49 + 173;
 
 			//FACE
 			switch(faceType){
@@ -172,7 +183,7 @@ public class Suspect {
 			//HAIR
 			switch(hairType){
 			case SHORT:
-				hairX = 6;
+				hairX = 7;
 				hairY = -16 - 46 + 173;
 				hair = hairs[0][0 + r.nextInt(3)];
 				break;
@@ -273,6 +284,9 @@ public class Suspect {
 		case MED:
 			body = bodies[0][1];
 			
+			signX = 10;
+			signY = -53 - 49 + 173;
+			
 			//FACE
 			switch(faceType){
 			case ONE:
@@ -300,7 +314,7 @@ public class Suspect {
 			//hair
 			switch(hairType){
 			case SHORT:
-				hairX = 6;
+				hairX = 7;
 				hairY = 0 - 46 + 173;
 				hair = hairs[0][0 + r.nextInt(3)];
 				break;
@@ -404,6 +418,9 @@ public class Suspect {
 		case LARGE:
 			body = bodies[0][2];
 			
+			signX = 10;
+			signY = - 40 - 49 + 173;
+			
 			//face
 			switch(faceType){
 			case ONE:
@@ -431,7 +448,7 @@ public class Suspect {
 			//Hair
 			switch(hairType){
 			case SHORT:
-				hairX = 6;
+				hairX = 7;
 				hairY = 12 - 46 + 173;
 				hair = hairs[0][0 + r.nextInt(3)];
 				break;
@@ -544,6 +561,8 @@ public class Suspect {
 		batch.draw(face, xPos + faceX, yPos + faceY);
 		batch.draw(shirt, xPos + shirtX, yPos + shirtY);
 		batch.draw(pants, xPos + pantsX, yPos + pantsY);
+		batch.draw(sign, xPos + signX, yPos + signY);
+		font.drawMessage("0" + suspectNumber, batch, xPos + signX + 6, yPos + signY + 5, 1.5f, Color.BLACK);
 	}
 	
 	public void dispose(){
@@ -552,6 +571,7 @@ public class Suspect {
 		hair = null;
 		shirt = null;
 		pants = null;
+		font = null;
 	}
 	
 	public static void disposeAllTextures(){

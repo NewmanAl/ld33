@@ -41,7 +41,6 @@ public class Main extends ApplicationAdapter {
 	private boolean[] selected;
 	private boolean prevClicked;
 	private Rectangle mouseRec;
-	private Pixmap dummyCursor;
 	
 	private Texture openingTex;
 	private float elapsedTime;
@@ -63,9 +62,15 @@ public class Main extends ApplicationAdapter {
 	private Texture folderOpen;
 	float folderY;
 	
+	private Texture clockTex;
+	private TextureRegion[][] clock;
+	private int clockState;
+	private boolean timeRunout;
+	
 	private Music backgroundMusic;
 	
 	private int level;
+	private int numCorrect;
 	private boolean started;
 	private boolean shuffleState;
 	
@@ -129,12 +134,20 @@ public class Main extends ApplicationAdapter {
         folderClosed = new Texture(Gdx.files.internal("Sprites/Large_Folder_Closed.png"));
         folderOpen = new Texture(Gdx.files.internal("Sprites/Large_Folder_Open.png"));
         
+        clockTex = new Texture(Gdx.files.internal("Sprites/clocks.png"));
+        clock = TextureRegion.split(clockTex, 56, 56);
+        
         suspects = new Suspect[5];
-        suspects[0] = new Suspect(BODY_TYPE.LARGE, FACE.ONE, HAIR.SHORT, SHIRT_COLOR.PURPLE, SHIRT_TYPE.ONE, false, 100, -146 - 173 +480);
-        suspects[1] = new Suspect(BODY_TYPE.LARGE, FACE.TWO, HAIR.BALD, SHIRT_COLOR.BROWN, SHIRT_TYPE.TWO, false, 197, -146 - 173 +480);
-        suspects[2] = new Suspect(BODY_TYPE.LARGE, FACE.THREE, HAIR.LONG, SHIRT_COLOR.BLUE, SHIRT_TYPE.THREE, false, 293, -146 - 173 +480);
-        suspects[3] = new Suspect(BODY_TYPE.LARGE, FACE.FOUR, HAIR.STYLE, SHIRT_COLOR.GREEN, SHIRT_TYPE.ONE, false, 389, -146 - 173 +480);
-        suspects[4] = new Suspect(BODY_TYPE.LARGE, FACE.FOUR, HAIR.LONG_LONG, SHIRT_COLOR.RED, SHIRT_TYPE.FOUR, false, 485, -146 - 173 +480);
+        suspects[0] = new Suspect(BODY_TYPE.LARGE, FACE.ONE, HAIR.SHORT, SHIRT_COLOR.PURPLE, SHIRT_TYPE.ONE, false, 100, -146 - 173 +480, font);
+        suspects[0].suspectNumber = 1;
+        suspects[1] = new Suspect(BODY_TYPE.LARGE, FACE.TWO, HAIR.BALD, SHIRT_COLOR.BROWN, SHIRT_TYPE.TWO, false, 197, -146 - 173 +480, font);
+        suspects[1].suspectNumber = 2;
+        suspects[2] = new Suspect(BODY_TYPE.LARGE, FACE.THREE, HAIR.LONG, SHIRT_COLOR.BLUE, SHIRT_TYPE.THREE, false, 293, -146 - 173 +480, font);
+        suspects[2].suspectNumber = 3;
+        suspects[3] = new Suspect(BODY_TYPE.LARGE, FACE.FOUR, HAIR.STYLE, SHIRT_COLOR.GREEN, SHIRT_TYPE.ONE, false, 389, -146 - 173 +480, font);
+        suspects[3].suspectNumber = 4;
+        suspects[4] = new Suspect(BODY_TYPE.LARGE, FACE.FOUR, HAIR.LONG_LONG, SHIRT_COLOR.RED, SHIRT_TYPE.FOUR, false, 485, -146 - 173 +480, font);
+        suspects[4].suspectNumber = 5;
         
         peopleRecs = new Rectangle[5];
         peopleRecs[0] = new Rectangle(suspects[0].xPos, suspects[0].yPos,59,173);
@@ -290,19 +303,250 @@ public class Main extends ApplicationAdapter {
 				
 				break;
 			case 1:
+				batch.draw(background,0,0);
+				batch.draw(folderOpen, -94,0);
+				font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
+				
+				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
+					//set up "suspsects
+					suspects[0].bodyType = BODY_TYPE.SMALL;
+					suspects[0].shirtType = SHIRT_TYPE.THREE;
+					suspects[0].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[0].faceType = FACE.ONE;
+					suspects[0].hairType = HAIR.SHORT;
+					suspects[0].isMonster = false;
+					suspects[0].suspectNumber = 1;
+					suspects[0].initBodyParts();
+					
+					suspects[1].bodyType = BODY_TYPE.MED;
+					suspects[1].shirtType = SHIRT_TYPE.FOUR;
+					suspects[1].shirtColor = SHIRT_COLOR.PURPLE;
+					suspects[1].faceType = FACE.THREE;
+					suspects[1].hairType = HAIR.LONG_LONG;
+					suspects[1].isMonster = true;
+					suspects[1].suspectNumber = 2;
+					suspects[1].initBodyParts();
+					
+					suspects[2].bodyType = BODY_TYPE.LARGE;
+					suspects[2].shirtType = SHIRT_TYPE.TWO;
+					suspects[2].shirtColor = SHIRT_COLOR.PURPLE;
+					suspects[2].faceType = FACE.THREE;
+					suspects[2].hairType = HAIR.STYLE;
+					suspects[2].isMonster = false;
+					suspects[2].suspectNumber = 3;
+					suspects[2].initBodyParts();
+					
+					suspects[3].bodyType = BODY_TYPE.SMALL;
+					suspects[3].shirtType = SHIRT_TYPE.ONE;
+					suspects[3].shirtColor = SHIRT_COLOR.RED;
+					suspects[3].faceType = FACE.TWO;
+					suspects[3].hairType = HAIR.BALD;
+					suspects[3].isMonster = false;
+					suspects[3].suspectNumber = 4;
+					suspects[3].initBodyParts();
+					
+					suspects[4].bodyType = BODY_TYPE.SMALL;
+					suspects[4].shirtType = SHIRT_TYPE.ONE;
+					suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
+					suspects[4].faceType = FACE.FOUR;
+					suspects[4].hairType = HAIR.SHORT;
+					suspects[4].isMonster = false;
+					suspects[4].suspectNumber = 5;
+					suspects[4].initBodyParts();
+					
+					gameState = GAME_STATE.BEGIN_REGULAR;
+				}
+				else
+					if(Gdx.input.isButtonPressed(0) && !prevClicked)
+						gameState = GAME_STATE.BEGIN_REGULAR;
+					else
+					if(!Gdx.input.isButtonPressed(0) &&  prevClicked)
+						prevClicked = false;
 				
 				break;
 			case 2:
+				batch.draw(background,0,0);
+				batch.draw(folderOpen, -94,0);
+				//font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
 				
+				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
+					//set up "suspsects
+					suspects[0].bodyType = BODY_TYPE.MED;
+					suspects[0].shirtType = SHIRT_TYPE.ONE;
+					suspects[0].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[0].faceType = FACE.FOUR;
+					suspects[0].hairType = HAIR.LONG_LONG;
+					suspects[0].isMonster = false;
+					suspects[0].suspectNumber = 1;
+					suspects[0].initBodyParts();
+					
+					suspects[1].bodyType = BODY_TYPE.LARGE;
+					suspects[1].shirtType = SHIRT_TYPE.FOUR;
+					suspects[1].shirtColor = SHIRT_COLOR.RED;
+					suspects[1].faceType = FACE.TWO;
+					suspects[1].hairType = HAIR.SHORT;
+					suspects[1].isMonster = false;
+					suspects[1].suspectNumber = 2;
+					suspects[1].initBodyParts();
+					
+					suspects[2].bodyType = BODY_TYPE.MED;
+					suspects[2].shirtType = SHIRT_TYPE.ONE;
+					suspects[2].shirtColor = SHIRT_COLOR.RED;
+					suspects[2].faceType = FACE.ONE;
+					suspects[2].hairType = HAIR.SHORT;
+					suspects[2].isMonster = false;
+					suspects[2].suspectNumber = 3;
+					suspects[2].initBodyParts();
+					
+					suspects[3].bodyType = BODY_TYPE.LARGE;
+					suspects[3].shirtType = SHIRT_TYPE.THREE;
+					suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[3].faceType = FACE.ONE;
+					suspects[3].hairType = HAIR.STYLE;
+					suspects[3].isMonster = true;
+					suspects[3].suspectNumber = 4;
+					suspects[3].initBodyParts();
+					
+					suspects[4].bodyType = BODY_TYPE.SMALL;
+					suspects[4].shirtType = SHIRT_TYPE.ONE;
+					suspects[4].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[4].faceType = FACE.FOUR;
+					suspects[4].hairType = HAIR.LONG;
+					suspects[4].isMonster = false;
+					suspects[4].suspectNumber = 5;
+					suspects[4].initBodyParts();
+					
+					gameState = GAME_STATE.BEGIN_REGULAR;
+				}
+				else
+					if(Gdx.input.isButtonPressed(0) && !prevClicked)
+						gameState = GAME_STATE.BEGIN_REGULAR;
+					else
+					if(!Gdx.input.isButtonPressed(0) &&  prevClicked)
+						prevClicked = false;
 				break;
 			case 3:
+				batch.draw(background,0,0);
+				batch.draw(folderOpen, -94,0);
+				//font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
 				
+				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
+					//set up "suspsects
+					suspects[0].bodyType = BODY_TYPE.MED;
+					suspects[0].shirtType = SHIRT_TYPE.TWO;
+					suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+					suspects[0].faceType = FACE.THREE;
+					suspects[0].hairType = HAIR.LONG;
+					suspects[0].isMonster = false;
+					suspects[0].suspectNumber = 1;
+					suspects[0].initBodyParts();
+					
+					suspects[1].bodyType = BODY_TYPE.LARGE;
+					suspects[1].shirtType = SHIRT_TYPE.FOUR;
+					suspects[1].shirtColor = SHIRT_COLOR.BLUE;
+					suspects[1].faceType = FACE.FOUR;
+					suspects[1].hairType = HAIR.STYLE;
+					suspects[1].isMonster = false;
+					suspects[1].suspectNumber = 2;
+					suspects[1].initBodyParts();
+					
+					suspects[2].bodyType = BODY_TYPE.MED;
+					suspects[2].shirtType = SHIRT_TYPE.ONE;
+					suspects[2].shirtColor = SHIRT_COLOR.RED;
+					suspects[2].faceType = FACE.ONE;
+					suspects[2].hairType = HAIR.LONG_LONG;
+					suspects[2].isMonster = false;
+					suspects[2].suspectNumber = 3;
+					suspects[2].initBodyParts();
+					
+					suspects[3].bodyType = BODY_TYPE.LARGE;
+					suspects[3].shirtType = SHIRT_TYPE.THREE;
+					suspects[3].shirtColor = SHIRT_COLOR.BROWN;
+					suspects[3].faceType = FACE.THREE;
+					suspects[3].hairType = HAIR.BALD;
+					suspects[3].isMonster = false;
+					suspects[3].suspectNumber = 4;
+					suspects[3].initBodyParts();
+					
+					suspects[4].bodyType = BODY_TYPE.MED;
+					suspects[4].shirtType = SHIRT_TYPE.FOUR;
+					suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
+					suspects[4].faceType = FACE.TWO;
+					suspects[4].hairType = HAIR.SHORT;
+					suspects[4].isMonster = true;
+					suspects[4].suspectNumber = 5;
+					suspects[4].initBodyParts();
+					
+					gameState = GAME_STATE.BEGIN_REGULAR;
+				}
+				else
+					if(Gdx.input.isButtonPressed(0) && !prevClicked)
+						gameState = GAME_STATE.BEGIN_REGULAR;
+					else
+					if(!Gdx.input.isButtonPressed(0) &&  prevClicked)
+						prevClicked = false;
 				break;
 			case 4:
+				batch.draw(background,0,0);
+				batch.draw(folderOpen, -94,0);
+				//font.drawMultilinedMessage("\n\n\n- The monster can’t see very well.\n- The monster is fashionable in purple.\n- The monster is not the tallest.", batch, 290, 300, 1, Color.BLACK);
 				
+				if(Gdx.input.isButtonPressed(0) && !prevClicked && !started){
+					//set up "suspsects
+					suspects[0].bodyType = BODY_TYPE.MED;
+					suspects[0].shirtType = SHIRT_TYPE.TWO;
+					suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+					suspects[0].faceType = FACE.TWO;
+					suspects[0].hairType = HAIR.STYLE;
+					suspects[0].isMonster = false;
+					suspects[0].suspectNumber = 1;
+					suspects[0].initBodyParts();
+					
+					suspects[1].bodyType = BODY_TYPE.SMALL;
+					suspects[1].shirtType = SHIRT_TYPE.FOUR;
+					suspects[1].shirtColor = SHIRT_COLOR.RED;
+					suspects[1].faceType = FACE.ONE;
+					suspects[1].hairType = HAIR.LONG;
+					suspects[1].isMonster = false;
+					suspects[1].suspectNumber = 2;
+					suspects[1].initBodyParts();
+					
+					suspects[2].bodyType = BODY_TYPE.LARGE;
+					suspects[2].shirtType = SHIRT_TYPE.TWO;
+					suspects[2].shirtColor = SHIRT_COLOR.BLUE;
+					suspects[2].faceType = FACE.THREE;
+					suspects[2].hairType = HAIR.SHORT;
+					suspects[2].isMonster = false;
+					suspects[2].suspectNumber = 3;
+					suspects[2].initBodyParts();
+					
+					suspects[3].bodyType = BODY_TYPE.SMALL;
+					suspects[3].shirtType = SHIRT_TYPE.ONE;
+					suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+					suspects[3].faceType = FACE.FOUR;
+					suspects[3].hairType = HAIR.STYLE;
+					suspects[3].isMonster = true;
+					suspects[3].suspectNumber = 4;
+					suspects[3].initBodyParts();
+					
+					suspects[4].bodyType = BODY_TYPE.MED;
+					suspects[4].shirtType = SHIRT_TYPE.THREE;
+					suspects[4].shirtColor = SHIRT_COLOR.BLUE;
+					suspects[4].faceType = FACE.ONE;
+					suspects[4].hairType = HAIR.LONG_LONG;
+					suspects[4].isMonster = false;
+					suspects[4].suspectNumber = 5;
+					suspects[4].initBodyParts();
+					
+					gameState = GAME_STATE.BEGIN_REGULAR;
+				}
+				else
+					if(Gdx.input.isButtonPressed(0) && !prevClicked)
+						gameState = GAME_STATE.BEGIN_REGULAR;
+					else
+					if(!Gdx.input.isButtonPressed(0) &&  prevClicked)
+						prevClicked = false;
 				break;
-				
-				
 				
 			}//end switch level
 			
@@ -310,6 +554,7 @@ public class Main extends ApplicationAdapter {
 			
 		case BEGIN_REGULAR:
 			batch.draw(backgroundWindow, 46, 161);
+			batch.draw(clock[0][clockState], 292, -53 - 56  + 480);
 			for(Suspect s : suspects)
 				s.Draw(batch);
 			batch.draw(background, 0, 0);
@@ -330,6 +575,8 @@ public class Main extends ApplicationAdapter {
 			batch.draw(backgroundWindow, 46, 161);
 			
 			doPeople(batch);
+			
+			doClock(batch);
 			
 			batch.draw(background,0,0);
 			
@@ -465,11 +712,27 @@ public class Main extends ApplicationAdapter {
 			
 			if(suspects[i].isMonster){
 				font.drawMessage("YOU GOT THE MONSTER", batch, 0, 300, 4, Color.WHITE);
-				System.out.println("PLAY THE SOUND");
+				numCorrect++;
 			}else
 				font.drawMessage("Noooo~", batch, 0, 300, 4, Color.WHITE);
 			
+			elapsedTime += Gdx.graphics.getDeltaTime();
+			if(elapsedTime >= 3){
+				level++;
+				started = false;
+				shuffleState = false;
+				selected[0] = selected[1] = selected [2] = selected[3] = selected[4] = false;
+				elapsedTime = 0;
+				if(level == 5)
+					gameState = GAME_STATE.GAME_OVER;
+				else
+					gameState = GAME_STATE.BEGIN_LEVEL;
+			}
+			
 			break;
+			
+		case GAME_OVER:
+			
 			
 				
 		}
@@ -539,7 +802,10 @@ public class Main extends ApplicationAdapter {
 		folderOpen.dispose();
 		folderClosed.dispose();
 		
-		//dummyCursor.dispose();
+		clockTex.dispose();
+		for(int i = 0; i<clock[0].length; i++)
+			clock[0][i].getTexture().dispose();
+		
 	}
 	
 	private void doPeople(SpriteBatch batch){//monstrous name... :D
@@ -626,6 +892,7 @@ public class Main extends ApplicationAdapter {
 				suspects[4].faceType = FACE.FOUR;
 				suspects[4].hairType = HAIR.LONG_LONG;
 				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 1;
 				suspects[4].initBodyParts();
 				
 				suspects[3].bodyType = BODY_TYPE.MED;
@@ -634,6 +901,7 @@ public class Main extends ApplicationAdapter {
 				suspects[3].faceType = FACE.THREE;
 				suspects[3].hairType = HAIR.BALD;
 				suspects[3].isMonster = false;
+				suspects[3].suspectNumber = 2;
 				suspects[3].initBodyParts();
 				
 				suspects[2].bodyType = BODY_TYPE.MED;
@@ -642,6 +910,7 @@ public class Main extends ApplicationAdapter {
 				suspects[2].faceType = FACE.TWO;
 				suspects[2].hairType = HAIR.SHORT;
 				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 3;
 				suspects[2].initBodyParts();
 				
 				suspects[0].bodyType = BODY_TYPE.LARGE;
@@ -650,6 +919,7 @@ public class Main extends ApplicationAdapter {
 				suspects[0].faceType = FACE.ONE;
 				suspects[0].hairType = HAIR.STYLE;
 				suspects[0].isMonster = true;
+				suspects[0].suspectNumber = 4;
 				suspects[0].initBodyParts();
 				
 				suspects[1].bodyType = BODY_TYPE.SMALL;
@@ -658,6 +928,7 @@ public class Main extends ApplicationAdapter {
 				suspects[1].faceType = FACE.FOUR;
 				suspects[1].hairType = HAIR.LONG;
 				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 5;
 				suspects[1].initBodyParts();
 			}else{//default state
 				suspects[0].bodyType = BODY_TYPE.SMALL;
@@ -666,6 +937,7 @@ public class Main extends ApplicationAdapter {
 				suspects[0].faceType = FACE.FOUR;
 				suspects[0].hairType = HAIR.LONG_LONG;
 				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 1;
 				suspects[0].initBodyParts();
 				
 				suspects[1].bodyType = BODY_TYPE.MED;
@@ -674,6 +946,7 @@ public class Main extends ApplicationAdapter {
 				suspects[1].faceType = FACE.THREE;
 				suspects[1].hairType = HAIR.BALD;
 				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 2;
 				suspects[1].initBodyParts();
 				
 				suspects[2].bodyType = BODY_TYPE.MED;
@@ -682,6 +955,7 @@ public class Main extends ApplicationAdapter {
 				suspects[2].faceType = FACE.TWO;
 				suspects[2].hairType = HAIR.SHORT;
 				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 3;
 				suspects[2].initBodyParts();
 				
 				suspects[3].bodyType = BODY_TYPE.LARGE;
@@ -690,6 +964,7 @@ public class Main extends ApplicationAdapter {
 				suspects[3].faceType = FACE.ONE;
 				suspects[3].hairType = HAIR.STYLE;
 				suspects[3].isMonster = true;
+				suspects[3].suspectNumber = 4;
 				suspects[3].initBodyParts();
 				
 				suspects[4].bodyType = BODY_TYPE.SMALL;
@@ -698,25 +973,403 @@ public class Main extends ApplicationAdapter {
 				suspects[4].faceType = FACE.FOUR;
 				suspects[4].hairType = HAIR.LONG;
 				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 5;
 				suspects[4].initBodyParts();
 			}
 			break;
 		case 1:
-			
+			if(shuffleState){
+				suspects[2].bodyType = BODY_TYPE.SMALL;
+				suspects[2].shirtType = SHIRT_TYPE.THREE;
+				suspects[2].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[2].faceType = FACE.ONE;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 1;
+				suspects[2].initBodyParts();
+				
+				suspects[0].bodyType = BODY_TYPE.MED;
+				suspects[0].shirtType = SHIRT_TYPE.FOUR;
+				suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[0].faceType = FACE.THREE;
+				suspects[0].hairType = HAIR.LONG_LONG;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 2;
+				suspects[0].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.LARGE;
+				suspects[4].shirtType = SHIRT_TYPE.TWO;
+				suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[4].faceType = FACE.THREE;
+				suspects[4].hairType = HAIR.STYLE;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 3;
+				suspects[4].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.SMALL;
+				suspects[3].shirtType = SHIRT_TYPE.ONE;
+				suspects[3].shirtColor = SHIRT_COLOR.RED;
+				suspects[3].faceType = FACE.TWO;
+				suspects[3].hairType = HAIR.BALD;
+				suspects[3].isMonster = false;
+				suspects[3].suspectNumber = 4;
+				suspects[3].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.SMALL;
+				suspects[1].shirtType = SHIRT_TYPE.ONE;
+				suspects[1].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[1].faceType = FACE.FOUR;
+				suspects[1].hairType = HAIR.SHORT;
+				suspects[1].isMonster = true;
+				suspects[1].suspectNumber = 5;
+				suspects[1].initBodyParts();
+			}else{
+				suspects[0].bodyType = BODY_TYPE.SMALL;
+				suspects[0].shirtType = SHIRT_TYPE.THREE;
+				suspects[0].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[0].faceType = FACE.ONE;
+				suspects[0].hairType = HAIR.SHORT;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 1;
+				suspects[0].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.MED;
+				suspects[1].shirtType = SHIRT_TYPE.FOUR;
+				suspects[1].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[1].faceType = FACE.THREE;
+				suspects[1].hairType = HAIR.LONG_LONG;
+				suspects[1].isMonster = true;
+				suspects[1].suspectNumber = 2;
+				suspects[1].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.LARGE;
+				suspects[2].shirtType = SHIRT_TYPE.TWO;
+				suspects[2].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[2].faceType = FACE.THREE;
+				suspects[2].hairType = HAIR.STYLE;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 3;
+				suspects[2].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.SMALL;
+				suspects[3].shirtType = SHIRT_TYPE.ONE;
+				suspects[3].shirtColor = SHIRT_COLOR.RED;
+				suspects[3].faceType = FACE.TWO;
+				suspects[3].hairType = HAIR.BALD;
+				suspects[3].isMonster = false;
+				suspects[3].suspectNumber = 4;
+				suspects[3].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.SMALL;
+				suspects[4].shirtType = SHIRT_TYPE.ONE;
+				suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[4].faceType = FACE.FOUR;
+				suspects[4].hairType = HAIR.SHORT;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 5;
+				suspects[4].initBodyParts();
+			}
 			break;
 		case 2:
-			
+			if(shuffleState){
+				suspects[1].bodyType = BODY_TYPE.MED;
+				suspects[1].shirtType = SHIRT_TYPE.ONE;
+				suspects[1].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[1].faceType = FACE.FOUR;
+				suspects[1].hairType = HAIR.LONG_LONG;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 1;
+				suspects[1].initBodyParts();
+				
+				suspects[0].bodyType = BODY_TYPE.LARGE;
+				suspects[0].shirtType = SHIRT_TYPE.FOUR;
+				suspects[0].shirtColor = SHIRT_COLOR.RED;
+				suspects[0].faceType = FACE.TWO;
+				suspects[0].hairType = HAIR.SHORT;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 2;
+				suspects[0].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.MED;
+				suspects[2].shirtType = SHIRT_TYPE.ONE;
+				suspects[2].shirtColor = SHIRT_COLOR.RED;
+				suspects[2].faceType = FACE.ONE;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 3;
+				suspects[2].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.LARGE;
+				suspects[4].shirtType = SHIRT_TYPE.THREE;
+				suspects[4].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[4].faceType = FACE.ONE;
+				suspects[4].hairType = HAIR.STYLE;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 4;
+				suspects[4].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.SMALL;
+				suspects[3].shirtType = SHIRT_TYPE.ONE;
+				suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[3].faceType = FACE.FOUR;
+				suspects[3].hairType = HAIR.LONG;
+				suspects[3].isMonster = true;
+				suspects[3].suspectNumber = 5;
+				suspects[3].initBodyParts();
+			}else{
+				suspects[0].bodyType = BODY_TYPE.MED;
+				suspects[0].shirtType = SHIRT_TYPE.ONE;
+				suspects[0].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[0].faceType = FACE.FOUR;
+				suspects[0].hairType = HAIR.LONG_LONG;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 1;
+				suspects[0].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.LARGE;
+				suspects[1].shirtType = SHIRT_TYPE.FOUR;
+				suspects[1].shirtColor = SHIRT_COLOR.RED;
+				suspects[1].faceType = FACE.TWO;
+				suspects[1].hairType = HAIR.SHORT;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 2;
+				suspects[1].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.MED;
+				suspects[2].shirtType = SHIRT_TYPE.ONE;
+				suspects[2].shirtColor = SHIRT_COLOR.RED;
+				suspects[2].faceType = FACE.ONE;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 3;
+				suspects[2].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.LARGE;
+				suspects[3].shirtType = SHIRT_TYPE.THREE;
+				suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[3].faceType = FACE.ONE;
+				suspects[3].hairType = HAIR.STYLE;
+				suspects[3].isMonster = true;
+				suspects[3].suspectNumber = 4;
+				suspects[3].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.SMALL;
+				suspects[4].shirtType = SHIRT_TYPE.ONE;
+				suspects[4].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[4].faceType = FACE.FOUR;
+				suspects[4].hairType = HAIR.LONG;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 5;
+				suspects[4].initBodyParts();
+			}
 			break;
 		case 3:
-			
+			if(shuffleState){
+				suspects[2].bodyType = BODY_TYPE.MED;
+				suspects[2].shirtType = SHIRT_TYPE.TWO;
+				suspects[2].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[2].faceType = FACE.THREE;
+				suspects[2].hairType = HAIR.LONG;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 1;
+				suspects[2].initBodyParts();
+				
+				suspects[0].bodyType = BODY_TYPE.LARGE;
+				suspects[0].shirtType = SHIRT_TYPE.FOUR;
+				suspects[0].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[0].faceType = FACE.FOUR;
+				suspects[0].hairType = HAIR.STYLE;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 2;
+				suspects[0].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.MED;
+				suspects[4].shirtType = SHIRT_TYPE.ONE;
+				suspects[4].shirtColor = SHIRT_COLOR.RED;
+				suspects[4].faceType = FACE.ONE;
+				suspects[4].hairType = HAIR.LONG_LONG;
+				suspects[4].isMonster = true;
+				suspects[4].suspectNumber = 3;
+				suspects[4].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.LARGE;
+				suspects[3].shirtType = SHIRT_TYPE.THREE;
+				suspects[3].shirtColor = SHIRT_COLOR.BROWN;
+				suspects[3].faceType = FACE.THREE;
+				suspects[3].hairType = HAIR.BALD;
+				suspects[3].isMonster = false;
+				suspects[3].suspectNumber = 4;
+				suspects[3].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.MED;
+				suspects[1].shirtType = SHIRT_TYPE.FOUR;
+				suspects[1].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[1].faceType = FACE.TWO;
+				suspects[1].hairType = HAIR.SHORT;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 5;
+				suspects[1].initBodyParts();
+			}else{
+				suspects[0].bodyType = BODY_TYPE.MED;
+				suspects[0].shirtType = SHIRT_TYPE.TWO;
+				suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[0].faceType = FACE.THREE;
+				suspects[0].hairType = HAIR.LONG;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 1;
+				suspects[0].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.LARGE;
+				suspects[1].shirtType = SHIRT_TYPE.FOUR;
+				suspects[1].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[1].faceType = FACE.FOUR;
+				suspects[1].hairType = HAIR.STYLE;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 2;
+				suspects[1].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.MED;
+				suspects[2].shirtType = SHIRT_TYPE.ONE;
+				suspects[2].shirtColor = SHIRT_COLOR.RED;
+				suspects[2].faceType = FACE.ONE;
+				suspects[2].hairType = HAIR.LONG_LONG;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 3;
+				suspects[2].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.LARGE;
+				suspects[3].shirtType = SHIRT_TYPE.THREE;
+				suspects[3].shirtColor = SHIRT_COLOR.BROWN;
+				suspects[3].faceType = FACE.THREE;
+				suspects[3].hairType = HAIR.BALD;
+				suspects[3].isMonster = false;
+				suspects[3].suspectNumber = 4;
+				suspects[3].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.MED;
+				suspects[4].shirtType = SHIRT_TYPE.FOUR;
+				suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[4].faceType = FACE.TWO;
+				suspects[4].hairType = HAIR.SHORT;
+				suspects[4].isMonster = true;
+				suspects[4].suspectNumber = 5;
+				suspects[4].initBodyParts();
+			}
 			break;
 		case 4:
-			
+			if(shuffleState){
+				suspects[0].bodyType = BODY_TYPE.MED;
+				suspects[0].shirtType = SHIRT_TYPE.TWO;
+				suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[0].faceType = FACE.TWO;
+				suspects[0].hairType = HAIR.STYLE;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 1;
+				suspects[0].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.SMALL;
+				suspects[3].shirtType = SHIRT_TYPE.FOUR;
+				suspects[3].shirtColor = SHIRT_COLOR.RED;
+				suspects[3].faceType = FACE.ONE;
+				suspects[3].hairType = HAIR.LONG;
+				suspects[3].isMonster = true;
+				suspects[3].suspectNumber = 2;
+				suspects[3].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.LARGE;
+				suspects[1].shirtType = SHIRT_TYPE.TWO;
+				suspects[1].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[1].faceType = FACE.THREE;
+				suspects[1].hairType = HAIR.SHORT;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 3;
+				suspects[1].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.SMALL;
+				suspects[2].shirtType = SHIRT_TYPE.ONE;
+				suspects[2].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[2].faceType = FACE.FOUR;
+				suspects[2].hairType = HAIR.STYLE;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 4;
+				suspects[2].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.MED;
+				suspects[4].shirtType = SHIRT_TYPE.THREE;
+				suspects[4].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[4].faceType = FACE.ONE;
+				suspects[4].hairType = HAIR.LONG_LONG;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 5;
+				suspects[4].initBodyParts();
+			}else{
+				suspects[0].bodyType = BODY_TYPE.MED;
+				suspects[0].shirtType = SHIRT_TYPE.TWO;
+				suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[0].faceType = FACE.TWO;
+				suspects[0].hairType = HAIR.STYLE;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 1;
+				suspects[0].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.SMALL;
+				suspects[1].shirtType = SHIRT_TYPE.FOUR;
+				suspects[1].shirtColor = SHIRT_COLOR.RED;
+				suspects[1].faceType = FACE.ONE;
+				suspects[1].hairType = HAIR.LONG;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 2;
+				suspects[1].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.LARGE;
+				suspects[2].shirtType = SHIRT_TYPE.TWO;
+				suspects[2].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[2].faceType = FACE.THREE;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 3;
+				suspects[2].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.SMALL;
+				suspects[3].shirtType = SHIRT_TYPE.ONE;
+				suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[3].faceType = FACE.FOUR;
+				suspects[3].hairType = HAIR.STYLE;
+				suspects[3].isMonster = true;
+				suspects[3].suspectNumber = 4;
+				suspects[3].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.MED;
+				suspects[4].shirtType = SHIRT_TYPE.THREE;
+				suspects[4].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[4].faceType = FACE.ONE;
+				suspects[4].hairType = HAIR.LONG_LONG;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 5;
+				suspects[4].initBodyParts();
+			}
 			break;
 		}
 		
 		for(Suspect s : suspects)
 			s.initBodyParts();
+	}
+	
+	private void doClock(SpriteBatch batch){
+		elapsedTime += Gdx.graphics.getDeltaTime();
+		
+		if(elapsedTime >= 3.75){
+			clockState++;
+			elapsedTime = 0;
+		}
+		
+		if(clockState == 8){
+			clockState = 0;
+			timeRunout = true;
+			gameState = GAME_STATE.END_LEVEL;
+		}
+		
+		batch.draw(clock[0][clockState], 292, -53 - 56 + 480);
 	}
 	
 }
