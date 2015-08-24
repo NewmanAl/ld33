@@ -5,6 +5,7 @@ import java.awt.Cursor;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -66,6 +67,7 @@ public class Main extends ApplicationAdapter {
 	
 	private int level;
 	private boolean started;
+	private boolean shuffleState;
 	
 	
 	private enum GAME_STATE{
@@ -76,13 +78,16 @@ public class Main extends ApplicationAdapter {
 		BEGIN_REGULAR,
 		REGULAR,
 		FOLDER_UP,
-		SHUFFLE,
-		VIEW_DOC,
+		SHUFFLE_START,
+		SHUFFLE_END,
 		AWAIT_RESULT,
+		RESULT,
 		END_LEVEL,
 		GAME_OVER
 	}
 	private GAME_STATE gameState;
+	
+	private Sound yay;
 	
 	@Override
 	public void create () {
@@ -96,6 +101,8 @@ public class Main extends ApplicationAdapter {
         backgroundMusic.setVolume(0);
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
+        
+        yay = Gdx.audio.newSound(Gdx.files.internal("Sound/yay.mp3"));
         
         gameState = GAME_STATE.OPENING;
         openingTex = new Texture(Gdx.files.internal("Sprites/NEwspaper_opening.png"));
@@ -237,6 +244,7 @@ public class Main extends ApplicationAdapter {
 					suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
 					suspects[0].faceType = FACE.FOUR;
 					suspects[0].hairType = HAIR.LONG_LONG;
+					suspects[0].isMonster = false;
 					suspects[0].initBodyParts();
 					
 					suspects[1].bodyType = BODY_TYPE.MED;
@@ -244,6 +252,7 @@ public class Main extends ApplicationAdapter {
 					suspects[1].shirtColor = SHIRT_COLOR.GREEN;
 					suspects[1].faceType = FACE.THREE;
 					suspects[1].hairType = HAIR.BALD;
+					suspects[1].isMonster = false;
 					suspects[1].initBodyParts();
 					
 					suspects[2].bodyType = BODY_TYPE.MED;
@@ -251,6 +260,7 @@ public class Main extends ApplicationAdapter {
 					suspects[2].shirtColor = SHIRT_COLOR.BLUE;
 					suspects[2].faceType = FACE.TWO;
 					suspects[2].hairType = HAIR.SHORT;
+					suspects[2].isMonster = false;
 					suspects[2].initBodyParts();
 					
 					suspects[3].bodyType = BODY_TYPE.LARGE;
@@ -258,6 +268,7 @@ public class Main extends ApplicationAdapter {
 					suspects[3].shirtColor = SHIRT_COLOR.GREEN;
 					suspects[3].faceType = FACE.ONE;
 					suspects[3].hairType = HAIR.STYLE;
+					suspects[3].isMonster = true;
 					suspects[3].initBodyParts();
 					
 					suspects[4].bodyType = BODY_TYPE.SMALL;
@@ -265,6 +276,7 @@ public class Main extends ApplicationAdapter {
 					suspects[4].shirtColor = SHIRT_COLOR.BROWN;
 					suspects[4].faceType = FACE.FOUR;
 					suspects[4].hairType = HAIR.LONG;
+					suspects[4].isMonster = false;
 					suspects[4].initBodyParts();
 					
 					gameState = GAME_STATE.BEGIN_REGULAR;
@@ -321,14 +333,19 @@ public class Main extends ApplicationAdapter {
 			
 			batch.draw(background,0,0);
 			
-			if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(shuffleRec))
+			if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(shuffleRec)){
 				batch.draw(shuffle[0][1], 82, -413 -55 + 480);
+				gameState = GAME_STATE.SHUFFLE_START;
+				fade = 1;
+			}
 			else
 				batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
 			
 			if(selected[0] || selected[1] || selected[2] || selected[3] || selected[4]){
-				if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(confirmRec))
+				if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(confirmRec)){
 					batch.draw(confirm[0][2], 106, -335 - 66 + 480);
+					gameState = GAME_STATE.AWAIT_RESULT;
+				}
 				else
 					batch.draw(confirm[0][1], 106, -335 - 66 + 480);
 			}
@@ -343,6 +360,7 @@ public class Main extends ApplicationAdapter {
 				if(Gdx.input.isButtonPressed(0)){
 					folderY = - 463;
 					gameState = GAME_STATE.FOLDER_UP;
+					elapsedTime = 0;
 				}
 			}else
 				batch.draw(deskFolder, 214, -373 - 110 + 480);
@@ -371,6 +389,88 @@ public class Main extends ApplicationAdapter {
 				started = true;
 				gameState = GAME_STATE.BEGIN_LEVEL;
 			}
+			
+			break;
+		case SHUFFLE_START:
+			fade -= Gdx.graphics.getDeltaTime();
+			if(fade <= 0)
+				fade = 0;
+			
+			batch.setColor(1,1,1,fade);
+			batch.draw(backgroundWindow, 46, 161);
+			for(Suspect s : suspects)
+				s.Draw(batch);
+			batch.setColor(Color.WHITE);;
+			batch.draw(background, 0, 0);
+			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
+			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
+			
+			if(fade == 0){
+				gameState = GAME_STATE.SHUFFLE_END;
+				shuffleState = !shuffleState;
+				shuffle(level);
+				System.out.println(level);
+			}
+			break;
+			
+		case SHUFFLE_END:
+			fade += Gdx.graphics.getDeltaTime();
+			if(fade >= 1)
+				fade = 1;
+			
+			batch.setColor(1,1,1,fade);
+			batch.draw(backgroundWindow, 46, 161);
+			for(Suspect s : suspects)
+				s.Draw(batch);
+			batch.setColor(Color.WHITE);;
+			batch.draw(background, 0, 0);
+			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
+			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
+			
+			if(fade == 1){
+				gameState = GAME_STATE.REGULAR;
+			}
+			
+			break;
+			
+		case AWAIT_RESULT:
+			elapsedTime += Gdx.graphics.getDeltaTime();
+			
+			batch.draw(backgroundWindow, 46, 161);
+			for(Suspect s : suspects)
+				s.Draw(batch);
+			batch.draw(background, 0, 0);
+			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
+			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
+			
+			if(elapsedTime >= 2){
+				elapsedTime = 0;
+				gameState = GAME_STATE.END_LEVEL;
+				if(selected[0] || selected[3])
+					yay.play(1.0f);
+			}
+			break;
+		case END_LEVEL:
+			int i = 0;
+			if(selected[0])
+				i = 0;
+			if(selected[1])
+				i = 1;
+			if(selected[2])
+				i = 2;
+			if(selected[3])
+				i = 3;
+			if(selected[4])
+				i = 4;
+			
+			if(suspects[i].isMonster){
+				font.drawMessage("YOU GOT THE MONSTER", batch, 0, 300, 4, Color.WHITE);
+				System.out.println("PLAY THE SOUND");
+			}else
+				font.drawMessage("Noooo~", batch, 0, 300, 4, Color.WHITE);
+			
+			break;
+			
 				
 		}
 		/*
@@ -433,6 +533,8 @@ public class Main extends ApplicationAdapter {
 		Suspect.disposeAllTextures();
 		
 		backgroundMusic.dispose();
+		
+		yay.dispose();
 		
 		folderOpen.dispose();
 		folderClosed.dispose();
@@ -512,6 +614,109 @@ public class Main extends ApplicationAdapter {
 		}else
 			prevClicked = false;
 	
+	}
+	
+	private void shuffle(int level){
+		switch(level){
+		case 0:
+			if(shuffleState){//switching from initial state
+				suspects[4].bodyType = BODY_TYPE.SMALL;
+				suspects[4].shirtType = SHIRT_TYPE.TWO;
+				suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[4].faceType = FACE.FOUR;
+				suspects[4].hairType = HAIR.LONG_LONG;
+				suspects[4].isMonster = false;
+				suspects[4].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.MED;
+				suspects[3].shirtType = SHIRT_TYPE.ONE;
+				suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[3].faceType = FACE.THREE;
+				suspects[3].hairType = HAIR.BALD;
+				suspects[3].isMonster = false;
+				suspects[3].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.MED;
+				suspects[2].shirtType = SHIRT_TYPE.THREE;
+				suspects[2].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[2].faceType = FACE.TWO;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = false;
+				suspects[2].initBodyParts();
+				
+				suspects[0].bodyType = BODY_TYPE.LARGE;
+				suspects[0].shirtType = SHIRT_TYPE.THREE;
+				suspects[0].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[0].faceType = FACE.ONE;
+				suspects[0].hairType = HAIR.STYLE;
+				suspects[0].isMonster = true;
+				suspects[0].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.SMALL;
+				suspects[1].shirtType = SHIRT_TYPE.TWO;
+				suspects[1].shirtColor = SHIRT_COLOR.BROWN;
+				suspects[1].faceType = FACE.FOUR;
+				suspects[1].hairType = HAIR.LONG;
+				suspects[1].isMonster = false;
+				suspects[1].initBodyParts();
+			}else{//default state
+				suspects[0].bodyType = BODY_TYPE.SMALL;
+				suspects[0].shirtType = SHIRT_TYPE.TWO;
+				suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[0].faceType = FACE.FOUR;
+				suspects[0].hairType = HAIR.LONG_LONG;
+				suspects[0].isMonster = false;
+				suspects[0].initBodyParts();
+				
+				suspects[1].bodyType = BODY_TYPE.MED;
+				suspects[1].shirtType = SHIRT_TYPE.ONE;
+				suspects[1].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[1].faceType = FACE.THREE;
+				suspects[1].hairType = HAIR.BALD;
+				suspects[1].isMonster = false;
+				suspects[1].initBodyParts();
+				
+				suspects[2].bodyType = BODY_TYPE.MED;
+				suspects[2].shirtType = SHIRT_TYPE.THREE;
+				suspects[2].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[2].faceType = FACE.TWO;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = false;
+				suspects[2].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.LARGE;
+				suspects[3].shirtType = SHIRT_TYPE.THREE;
+				suspects[3].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[3].faceType = FACE.ONE;
+				suspects[3].hairType = HAIR.STYLE;
+				suspects[3].isMonster = true;
+				suspects[3].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.SMALL;
+				suspects[4].shirtType = SHIRT_TYPE.TWO;
+				suspects[4].shirtColor = SHIRT_COLOR.BROWN;
+				suspects[4].faceType = FACE.FOUR;
+				suspects[4].hairType = HAIR.LONG;
+				suspects[4].isMonster = false;
+				suspects[4].initBodyParts();
+			}
+			break;
+		case 1:
+			
+			break;
+		case 2:
+			
+			break;
+		case 3:
+			
+			break;
+		case 4:
+			
+			break;
+		}
+		
+		for(Suspect s : suspects)
+			s.initBodyParts();
 	}
 	
 }
