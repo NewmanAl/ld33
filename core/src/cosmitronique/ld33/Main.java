@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.TextureData;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -68,6 +70,11 @@ public class Main extends ApplicationAdapter {
 	private boolean timeRunout;
 	private float clockTime;
 	
+	private Texture monsterTex;
+	private TextureRegion monsterFrames[];
+	private Animation monsterAnim;
+	private TextureRegion currentMonsterFrame;
+	
 	private Music backgroundMusic;
 	
 	private int level;
@@ -89,6 +96,7 @@ public class Main extends ApplicationAdapter {
 		SHUFFLE_START,
 		SHUFFLE_END,
 		AWAIT_RESULT,
+		ANIMATION,
 		RESULT,
 		END_LEVEL,
 		GAME_OVER
@@ -139,6 +147,20 @@ public class Main extends ApplicationAdapter {
         
         clockTex = new Texture(Gdx.files.internal("Sprites/clocks.png"));
         clock = TextureRegion.split(clockTex, 56, 56);
+        
+        monsterTex = new Texture(Gdx.files.internal("Sprites/Monster_Anim_Sheet.png"));
+        TextureRegion[][] tempReg = TextureRegion.split(monsterTex, 274, 274);
+        monsterFrames = new TextureRegion[tempReg.length * tempReg[0].length];
+        for(int i = 0; i<tempReg.length; i++)
+        	for(int j = 0; j<tempReg[0].length; j++)
+        		monsterFrames[(i * tempReg.length) + j] = tempReg[i][j];
+        
+        monsterAnim = new Animation(0.01f, monsterFrames);
+        monsterAnim.setPlayMode(PlayMode.NORMAL);
+        
+        tempReg = null;
+        
+        monsterAnim = new Animation(0.2f, monsterFrames);
         
         suspects = new Suspect[5];
         suspects[0] = new Suspect(BODY_TYPE.LARGE, FACE.ONE, HAIR.SHORT, SHIRT_COLOR.PURPLE, SHIRT_TYPE.ONE, false, 100, -146 - 173 +480, font);
@@ -694,13 +716,40 @@ public class Main extends ApplicationAdapter {
 			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
 			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
 			
-			if(elapsedTime >= 2){
+			if(elapsedTime >= 1.5){
 				elapsedTime = 0;
-				gameState = GAME_STATE.END_LEVEL;
-				if(selected[0] || selected[3])
-					yay.play(1.0f);
+				gameState = GAME_STATE.ANIMATION;				
 			}
 			break;
+			
+		case ANIMATION:
+			int j = 0;
+			if(selected[0])
+				j = 0;
+			if(selected[1])
+				j = 1;
+			if(selected[2])
+				j = 2;
+			if(selected[3])
+				j = 3;
+			if(selected[4])
+				j = 4;
+			
+			if(suspects[j].isMonster){
+				elapsedTime += 4 * Gdx.graphics.getDeltaTime();
+				currentMonsterFrame = monsterAnim.getKeyFrame(elapsedTime);
+				
+				batch.draw(currentMonsterFrame, suspects[j].xPos, suspects[j].yPos);
+				
+				if(monsterAnim.isAnimationFinished(elapsedTime)){
+					gameState = GAME_STATE.END_LEVEL;
+					elapsedTime = 0;
+				}
+			}else
+				gameState = GAME_STATE.END_LEVEL;
+			
+			break;
+			
 		case END_LEVEL:
 			int i = 0;
 			if(selected[0])
@@ -782,6 +831,10 @@ public class Main extends ApplicationAdapter {
 		clockTex.dispose();
 		for(int i = 0; i<clock[0].length; i++)
 			clock[0][i].getTexture().dispose();
+		
+		monsterTex.dispose();
+		for(int i = 0; i<monsterFrames.length; i++)
+			monsterFrames[i].getTexture().dispose();
 		
 	}
 	
