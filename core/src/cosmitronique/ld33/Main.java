@@ -916,23 +916,23 @@ public class Main extends ApplicationAdapter {
 		switch(level){
 		case 0:
 			if(shuffleState){//switching from initial state
-				suspects[4].bodyType = BODY_TYPE.SMALL;
-				suspects[4].shirtType = SHIRT_TYPE.TWO;
-				suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
-				suspects[4].faceType = FACE.FOUR;
-				suspects[4].hairType = HAIR.LONG_LONG;
-				suspects[4].isMonster = false;
-				suspects[4].suspectNumber = 1;
-				suspects[4].initBodyParts();
-				
-				suspects[3].bodyType = BODY_TYPE.MED;
-				suspects[3].shirtType = SHIRT_TYPE.ONE;
-				suspects[3].shirtColor = SHIRT_COLOR.GREEN;
-				suspects[3].faceType = FACE.THREE;
-				suspects[3].hairType = HAIR.BALD;
+				suspects[3].bodyType = BODY_TYPE.SMALL;
+				suspects[3].shirtType = SHIRT_TYPE.TWO;
+				suspects[3].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[3].faceType = FACE.FOUR;
+				suspects[3].hairType = HAIR.LONG_LONG;
 				suspects[3].isMonster = false;
-				suspects[3].suspectNumber = 2;
+				suspects[3].suspectNumber = 1;
 				suspects[3].initBodyParts();
+				
+				suspects[4].bodyType = BODY_TYPE.MED;
+				suspects[4].shirtType = SHIRT_TYPE.ONE;
+				suspects[4].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[4].faceType = FACE.THREE;
+				suspects[4].hairType = HAIR.BALD;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 2;
+				suspects[4].initBodyParts();
 				
 				suspects[2].bodyType = BODY_TYPE.MED;
 				suspects[2].shirtType = SHIRT_TYPE.THREE;
@@ -943,23 +943,23 @@ public class Main extends ApplicationAdapter {
 				suspects[2].suspectNumber = 3;
 				suspects[2].initBodyParts();
 				
-				suspects[0].bodyType = BODY_TYPE.LARGE;
-				suspects[0].shirtType = SHIRT_TYPE.THREE;
-				suspects[0].shirtColor = SHIRT_COLOR.GREEN;
-				suspects[0].faceType = FACE.ONE;
-				suspects[0].hairType = HAIR.STYLE;
-				suspects[0].isMonster = true;
-				suspects[0].suspectNumber = 4;
-				suspects[0].initBodyParts();
-				
-				suspects[1].bodyType = BODY_TYPE.SMALL;
-				suspects[1].shirtType = SHIRT_TYPE.TWO;
-				suspects[1].shirtColor = SHIRT_COLOR.BROWN;
-				suspects[1].faceType = FACE.FOUR;
-				suspects[1].hairType = HAIR.LONG;
-				suspects[1].isMonster = false;
-				suspects[1].suspectNumber = 5;
+				suspects[1].bodyType = BODY_TYPE.LARGE;
+				suspects[1].shirtType = SHIRT_TYPE.THREE;
+				suspects[1].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[1].faceType = FACE.ONE;
+				suspects[1].hairType = HAIR.STYLE;
+				suspects[1].isMonster = true;
+				suspects[1].suspectNumber = 4;
 				suspects[1].initBodyParts();
+				
+				suspects[0].bodyType = BODY_TYPE.SMALL;
+				suspects[0].shirtType = SHIRT_TYPE.TWO;
+				suspects[0].shirtColor = SHIRT_COLOR.BROWN;
+				suspects[0].faceType = FACE.FOUR;
+				suspects[0].hairType = HAIR.LONG;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 5;
+				suspects[0].initBodyParts();
 			}else{//default state
 				suspects[0].bodyType = BODY_TYPE.SMALL;
 				suspects[0].shirtType = SHIRT_TYPE.TWO;
@@ -1009,32 +1009,32 @@ public class Main extends ApplicationAdapter {
 			break;
 		case 1:
 			if(shuffleState){
-				suspects[2].bodyType = BODY_TYPE.SMALL;
-				suspects[2].shirtType = SHIRT_TYPE.THREE;
-				suspects[2].shirtColor = SHIRT_COLOR.GREEN;
-				suspects[2].faceType = FACE.ONE;
-				suspects[2].hairType = HAIR.SHORT;
-				suspects[2].isMonster = false;
-				suspects[2].suspectNumber = 1;
-				suspects[2].initBodyParts();
+				suspects[1].bodyType = BODY_TYPE.SMALL;
+				suspects[1].shirtType = SHIRT_TYPE.THREE;
+				suspects[1].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[1].faceType = FACE.ONE;
+				suspects[1].hairType = HAIR.SHORT;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 1;
+				suspects[1].initBodyParts();
 				
-				suspects[0].bodyType = BODY_TYPE.MED;
-				suspects[0].shirtType = SHIRT_TYPE.FOUR;
-				suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
-				suspects[0].faceType = FACE.THREE;
-				suspects[0].hairType = HAIR.LONG_LONG;
-				suspects[0].isMonster = false;
-				suspects[0].suspectNumber = 2;
-				suspects[0].initBodyParts();
-				
-				suspects[4].bodyType = BODY_TYPE.LARGE;
-				suspects[4].shirtType = SHIRT_TYPE.TWO;
+				suspects[4].bodyType = BODY_TYPE.MED;
+				suspects[4].shirtType = SHIRT_TYPE.FOUR;
 				suspects[4].shirtColor = SHIRT_COLOR.PURPLE;
 				suspects[4].faceType = FACE.THREE;
-				suspects[4].hairType = HAIR.STYLE;
-				suspects[4].isMonster = false;
-				suspects[4].suspectNumber = 3;
+				suspects[4].hairType = HAIR.LONG_LONG;
+				suspects[4].isMonster = true;
+				suspects[4].suspectNumber = 2;
 				suspects[4].initBodyParts();
+				
+				suspects[0].bodyType = BODY_TYPE.LARGE;
+				suspects[0].shirtType = SHIRT_TYPE.TWO;
+				suspects[0].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[0].faceType = FACE.THREE;
+				suspects[0].hairType = HAIR.STYLE;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 3;
+				suspects[0].initBodyParts();
 				
 				suspects[3].bodyType = BODY_TYPE.SMALL;
 				suspects[3].shirtType = SHIRT_TYPE.ONE;
@@ -1045,14 +1045,14 @@ public class Main extends ApplicationAdapter {
 				suspects[3].suspectNumber = 4;
 				suspects[3].initBodyParts();
 				
-				suspects[1].bodyType = BODY_TYPE.SMALL;
-				suspects[1].shirtType = SHIRT_TYPE.ONE;
-				suspects[1].shirtColor = SHIRT_COLOR.PURPLE;
-				suspects[1].faceType = FACE.FOUR;
-				suspects[1].hairType = HAIR.SHORT;
-				suspects[1].isMonster = true;
-				suspects[1].suspectNumber = 5;
-				suspects[1].initBodyParts();
+				suspects[2].bodyType = BODY_TYPE.SMALL;
+				suspects[2].shirtType = SHIRT_TYPE.ONE;
+				suspects[2].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[2].faceType = FACE.FOUR;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 5;
+				suspects[2].initBodyParts();
 			}else{
 				suspects[0].bodyType = BODY_TYPE.SMALL;
 				suspects[0].shirtType = SHIRT_TYPE.THREE;
@@ -1134,7 +1134,7 @@ public class Main extends ApplicationAdapter {
 				suspects[4].shirtColor = SHIRT_COLOR.GREEN;
 				suspects[4].faceType = FACE.ONE;
 				suspects[4].hairType = HAIR.STYLE;
-				suspects[4].isMonster = false;
+				suspects[4].isMonster = true;
 				suspects[4].suspectNumber = 4;
 				suspects[4].initBodyParts();
 				
@@ -1143,7 +1143,7 @@ public class Main extends ApplicationAdapter {
 				suspects[3].shirtColor = SHIRT_COLOR.RED;
 				suspects[3].faceType = FACE.FOUR;
 				suspects[3].hairType = HAIR.LONG;
-				suspects[3].isMonster = true;
+				suspects[3].isMonster = false;
 				suspects[3].suspectNumber = 5;
 				suspects[3].initBodyParts();
 			}else{
@@ -1195,32 +1195,32 @@ public class Main extends ApplicationAdapter {
 			break;
 		case 3:
 			if(shuffleState){
-				suspects[2].bodyType = BODY_TYPE.MED;
-				suspects[2].shirtType = SHIRT_TYPE.TWO;
-				suspects[2].shirtColor = SHIRT_COLOR.PURPLE;
-				suspects[2].faceType = FACE.THREE;
-				suspects[2].hairType = HAIR.LONG;
-				suspects[2].isMonster = false;
-				suspects[2].suspectNumber = 1;
-				suspects[2].initBodyParts();
+				suspects[1].bodyType = BODY_TYPE.MED;
+				suspects[1].shirtType = SHIRT_TYPE.TWO;
+				suspects[1].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[1].faceType = FACE.THREE;
+				suspects[1].hairType = HAIR.LONG;
+				suspects[1].isMonster = false;
+				suspects[1].suspectNumber = 1;
+				suspects[1].initBodyParts();
 				
-				suspects[0].bodyType = BODY_TYPE.LARGE;
-				suspects[0].shirtType = SHIRT_TYPE.FOUR;
-				suspects[0].shirtColor = SHIRT_COLOR.BLUE;
-				suspects[0].faceType = FACE.FOUR;
-				suspects[0].hairType = HAIR.STYLE;
-				suspects[0].isMonster = false;
-				suspects[0].suspectNumber = 2;
-				suspects[0].initBodyParts();
-				
-				suspects[4].bodyType = BODY_TYPE.MED;
-				suspects[4].shirtType = SHIRT_TYPE.ONE;
-				suspects[4].shirtColor = SHIRT_COLOR.RED;
-				suspects[4].faceType = FACE.ONE;
-				suspects[4].hairType = HAIR.LONG_LONG;
-				suspects[4].isMonster = true;
-				suspects[4].suspectNumber = 3;
+				suspects[4].bodyType = BODY_TYPE.LARGE;
+				suspects[4].shirtType = SHIRT_TYPE.FOUR;
+				suspects[4].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[4].faceType = FACE.FOUR;
+				suspects[4].hairType = HAIR.STYLE;
+				suspects[4].isMonster = false;
+				suspects[4].suspectNumber = 2;
 				suspects[4].initBodyParts();
+				
+				suspects[0].bodyType = BODY_TYPE.MED;
+				suspects[0].shirtType = SHIRT_TYPE.ONE;
+				suspects[0].shirtColor = SHIRT_COLOR.RED;
+				suspects[0].faceType = FACE.ONE;
+				suspects[0].hairType = HAIR.LONG_LONG;
+				suspects[0].isMonster = false;
+				suspects[0].suspectNumber = 3;
+				suspects[0].initBodyParts();
 				
 				suspects[3].bodyType = BODY_TYPE.LARGE;
 				suspects[3].shirtType = SHIRT_TYPE.THREE;
@@ -1231,14 +1231,14 @@ public class Main extends ApplicationAdapter {
 				suspects[3].suspectNumber = 4;
 				suspects[3].initBodyParts();
 				
-				suspects[1].bodyType = BODY_TYPE.MED;
-				suspects[1].shirtType = SHIRT_TYPE.FOUR;
-				suspects[1].shirtColor = SHIRT_COLOR.PURPLE;
-				suspects[1].faceType = FACE.TWO;
-				suspects[1].hairType = HAIR.SHORT;
-				suspects[1].isMonster = false;
-				suspects[1].suspectNumber = 5;
-				suspects[1].initBodyParts();
+				suspects[2].bodyType = BODY_TYPE.MED;
+				suspects[2].shirtType = SHIRT_TYPE.FOUR;
+				suspects[2].shirtColor = SHIRT_COLOR.PURPLE;
+				suspects[2].faceType = FACE.TWO;
+				suspects[2].hairType = HAIR.SHORT;
+				suspects[2].isMonster = true;
+				suspects[2].suspectNumber = 5;
+				suspects[2].initBodyParts();
 			}else{
 				suspects[0].bodyType = BODY_TYPE.MED;
 				suspects[0].shirtType = SHIRT_TYPE.TWO;
@@ -1297,32 +1297,32 @@ public class Main extends ApplicationAdapter {
 				suspects[0].suspectNumber = 1;
 				suspects[0].initBodyParts();
 				
-				suspects[3].bodyType = BODY_TYPE.SMALL;
-				suspects[3].shirtType = SHIRT_TYPE.FOUR;
-				suspects[3].shirtColor = SHIRT_COLOR.RED;
-				suspects[3].faceType = FACE.ONE;
-				suspects[3].hairType = HAIR.LONG;
-				suspects[3].isMonster = true;
-				suspects[3].suspectNumber = 2;
+				suspects[2].bodyType = BODY_TYPE.SMALL;
+				suspects[2].shirtType = SHIRT_TYPE.FOUR;
+				suspects[2].shirtColor = SHIRT_COLOR.RED;
+				suspects[2].faceType = FACE.ONE;
+				suspects[2].hairType = HAIR.LONG;
+				suspects[2].isMonster = false;
+				suspects[2].suspectNumber = 2;
+				suspects[2].initBodyParts();
+				
+				suspects[3].bodyType = BODY_TYPE.LARGE;
+				suspects[3].shirtType = SHIRT_TYPE.TWO;
+				suspects[3].shirtColor = SHIRT_COLOR.BLUE;
+				suspects[3].faceType = FACE.THREE;
+				suspects[3].hairType = HAIR.SHORT;
+				suspects[3].isMonster = false;
+				suspects[3].suspectNumber = 3;
 				suspects[3].initBodyParts();
 				
-				suspects[1].bodyType = BODY_TYPE.LARGE;
-				suspects[1].shirtType = SHIRT_TYPE.TWO;
-				suspects[1].shirtColor = SHIRT_COLOR.BLUE;
-				suspects[1].faceType = FACE.THREE;
-				suspects[1].hairType = HAIR.SHORT;
-				suspects[1].isMonster = false;
-				suspects[1].suspectNumber = 3;
+				suspects[1].bodyType = BODY_TYPE.SMALL;
+				suspects[1].shirtType = SHIRT_TYPE.ONE;
+				suspects[1].shirtColor = SHIRT_COLOR.GREEN;
+				suspects[1].faceType = FACE.FOUR;
+				suspects[1].hairType = HAIR.STYLE;
+				suspects[1].isMonster = true;
+				suspects[1].suspectNumber = 4;
 				suspects[1].initBodyParts();
-				
-				suspects[2].bodyType = BODY_TYPE.SMALL;
-				suspects[2].shirtType = SHIRT_TYPE.ONE;
-				suspects[2].shirtColor = SHIRT_COLOR.GREEN;
-				suspects[2].faceType = FACE.FOUR;
-				suspects[2].hairType = HAIR.STYLE;
-				suspects[2].isMonster = false;
-				suspects[2].suspectNumber = 4;
-				suspects[2].initBodyParts();
 				
 				suspects[4].bodyType = BODY_TYPE.MED;
 				suspects[4].shirtType = SHIRT_TYPE.THREE;
