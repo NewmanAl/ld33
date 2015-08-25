@@ -76,6 +76,10 @@ public class Main extends ApplicationAdapter {
 	private TextureRegion currentMonsterFrame;
 	
 	private Music backgroundMusic;
+	private Sound buttonPress;
+	private Sound monsterSound;
+	private Sound wrongChoice;
+	private Sound selectSound;
 	
 	private int level;
 	private int numCorrect;
@@ -117,6 +121,12 @@ public class Main extends ApplicationAdapter {
         backgroundMusic.setVolume(0);
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
+        
+        buttonPress = Gdx.audio.newSound(Gdx.files.internal("Sound/Button_Press.wav"));
+        monsterSound = Gdx.audio.newSound(Gdx.files.internal("Sound/Monster.wav"));
+        selectSound = Gdx.audio.newSound(Gdx.files.internal("Sound/Select.wav"));
+        wrongChoice = Gdx.audio.newSound(Gdx.files.internal("Sound/Wrong Choice.wav"));
+        
         
         yay = Gdx.audio.newSound(Gdx.files.internal("Sound/yay.mp3"));
         
@@ -607,6 +617,7 @@ public class Main extends ApplicationAdapter {
 			batch.draw(background,0,0);
 			
 			if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(shuffleRec)){
+				buttonPress.play(1);
 				batch.draw(shuffle[0][1], 82, -413 -55 + 480);
 				gameState = GAME_STATE.SHUFFLE_START;
 				fade = 1;
@@ -616,6 +627,7 @@ public class Main extends ApplicationAdapter {
 			
 			if(selected[0] || selected[1] || selected[2] || selected[3] || selected[4]){
 				if(Gdx.input.isButtonPressed(0) && mouseRec.overlaps(confirmRec)){
+					buttonPress.play(1);
 					batch.draw(confirm[0][2], 106, -335 - 66 + 480);
 					gameState = GAME_STATE.AWAIT_RESULT;
 					elapsedTime = 0;
@@ -718,7 +730,8 @@ public class Main extends ApplicationAdapter {
 			
 			if(elapsedTime >= 1.5){
 				elapsedTime = 0;
-				gameState = GAME_STATE.ANIMATION;				
+				gameState = GAME_STATE.ANIMATION;	
+				monsterSound.play(1);
 			}
 			break;
 			
@@ -745,8 +758,10 @@ public class Main extends ApplicationAdapter {
 					gameState = GAME_STATE.END_LEVEL;
 					elapsedTime = 0;
 				}
-			}else
+			}else{
+				wrongChoice.play(1);
 				gameState = GAME_STATE.END_LEVEL;
+			}
 			
 			break;
 			
@@ -823,6 +838,11 @@ public class Main extends ApplicationAdapter {
 		
 		backgroundMusic.dispose();
 		
+		buttonPress.dispose();
+		monsterSound.dispose();
+		wrongChoice.dispose();
+		selectSound.dispose();
+		
 		yay.dispose();
 		
 		folderOpen.dispose();
@@ -884,6 +904,7 @@ public class Main extends ApplicationAdapter {
 		//check input
 		if(Gdx.input.isButtonPressed(0)){
 			if( !prevClicked && (hoveredOver[0] || hoveredOver[1] || hoveredOver[2] || hoveredOver[3] || hoveredOver[4])){
+				selectSound.play(1);
 				if(hoveredOver[0]){
 					selected[1] = selected[2] = selected[3] = selected[4] =false;
 					selected[0] = !selected[0];
