@@ -196,7 +196,6 @@ public class Main extends ApplicationAdapter {
         mouseRec.width = 1;
         mouseRec.height = 1;
         
-        //gameState = GAME_STATE.BEGIN_FADE;
 	}
 
 	@Override
@@ -663,6 +662,7 @@ public class Main extends ApplicationAdapter {
 			batch.draw(backgroundWindow, 46, 161);
 			for(Suspect s : suspects)
 				s.Draw(batch);
+			batch.draw(clock[0][clockState],292, -53 - 56 + 480);
 			batch.draw(background, 0, 0);
 			batch.draw(shuffle[0][0], 82, -413 - 55 + 480);
 			batch.draw(confirm[0][0], 106, -335 - 66 + 480);
@@ -732,6 +732,20 @@ public class Main extends ApplicationAdapter {
 				elapsedTime = 0;
 				gameState = GAME_STATE.ANIMATION;	
 				monsterSound.play(1);
+				int RUNNNINGOUTOFTIME = 0;
+				if(selected[0])
+					RUNNNINGOUTOFTIME = 0;
+				if(selected[1])
+					RUNNNINGOUTOFTIME = 1;
+				if(selected[2])
+					RUNNNINGOUTOFTIME = 2;
+				if(selected[3])
+					RUNNNINGOUTOFTIME = 3;
+				if(selected[4])
+					RUNNNINGOUTOFTIME = 4;
+				
+				if(suspects[RUNNNINGOUTOFTIME].isMonster)
+					numCorrect++;
 			}
 			break;
 			
@@ -752,7 +766,7 @@ public class Main extends ApplicationAdapter {
 				elapsedTime += 4 * Gdx.graphics.getDeltaTime();
 				currentMonsterFrame = monsterAnim.getKeyFrame(elapsedTime);
 				
-				batch.draw(currentMonsterFrame, suspects[j].xPos, suspects[j].yPos);
+				batch.draw(currentMonsterFrame, suspects[j].xPos-95, suspects[j].yPos);
 				
 				if(monsterAnim.isAnimationFinished(elapsedTime)){
 					gameState = GAME_STATE.END_LEVEL;
@@ -779,10 +793,14 @@ public class Main extends ApplicationAdapter {
 				i = 4;
 			
 			if(suspects[i].isMonster){
-				font.drawMessage("YOU GOT THE MONSTER", batch, 0, 300, 4, Color.WHITE);
-				numCorrect++;
+				font.drawMessage("YOU GOT THE MONSTER!", batch, 0, 300, 4, Color.WHITE);
 			}else
-				font.drawMessage("Noooo~", batch, 0, 300, 4, Color.WHITE);
+				if(timeRunout){
+					font.drawMultilinedMessage("TOO SLOW! THE\nMONSTER GOT AWAY!", batch, 0, 300, 4, Color.WHITE);
+				}else{
+					font.drawMultilinedMessage("WRONG PERSON!\nTHE MONSTER GOT\nAWAY!", batch, 0, 300, 4, Color.WHITE);
+				}
+				
 			
 			elapsedTime += Gdx.graphics.getDeltaTime();
 			if(elapsedTime >= 3){
@@ -791,6 +809,7 @@ public class Main extends ApplicationAdapter {
 				shuffleState = false;
 				selected[0] = selected[1] = selected [2] = selected[3] = selected[4] = false;
 				elapsedTime = 0;
+				timeRunout = false;
 				if(level == 5)
 					gameState = GAME_STATE.GAME_OVER;
 				else
@@ -803,9 +822,16 @@ public class Main extends ApplicationAdapter {
 			break;
 			
 		case GAME_OVER:
+			font.drawMessage("You got " + numCorrect + " monsters out of 5", batch, 10, 400, 2, Color.WHITE);
+			font.drawMessage("Thank you for playing!", batch, 10, 360, 2, Color.WHITE);
+			
+			font.drawMessage("TEAM COSMITRONIQUE", batch, 10, 250, 2, Color.WHITE);
+			font.drawMessage("Simon Dansereau", batch, 10, 230, 2, Color.WHITE);
+			font.drawMessage("Thu Khu", batch, 10, 210, 2, Color.WHITE);
+			font.drawMessage("Alex Newman", batch, 10, 190, 2, Color.WHITE);
 			
 			
-				
+			break;	
 		}
 		batch.end();
 	}
@@ -1415,6 +1441,7 @@ public class Main extends ApplicationAdapter {
 		}
 		
 		if(clockState == 8){
+			wrongChoice.play(1);
 			clockTime = 0;
 			clockState = 0;
 			timeRunout = true;
